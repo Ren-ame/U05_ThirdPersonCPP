@@ -37,7 +37,6 @@ public:
 	{
 		*OutComponent = InActor->CreateDefaultSubobject<T>(InName);
 
-
 		if (InParent)
 		{
 			(*OutComponent)->SetupAttachment(InParent);
@@ -45,5 +44,11 @@ public:
 		}
 
 		InActor->SetRootComponent(*OutComponent);
+	}
+
+	template<typename T>
+	static void CreateActorComponent(AActor* InActor, T** OutComponent, FName InName)
+	{
+		*OutComponent = InActor->CreateDefaultSubobject<T>(InName);
 	}
 };
