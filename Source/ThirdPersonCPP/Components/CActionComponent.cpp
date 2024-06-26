@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "GameFramework/Character.h"
 #include "Actions/CActionData.h"
+#include "Actions/CEquipment.h"
 
 UCActionComponent::UCActionComponent()
 {
@@ -26,6 +27,11 @@ void UCActionComponent::BeginPlay()
 
 void UCActionComponent::SetUnaremdMode()
 {
+	if (DataAssets[(int32)Type] && DataAssets[(int32)Type]->GetEquipment())
+		DataAssets[(int32)Type]->GetEquipment()->Unequip();
+
+	DataAssets[(int32)EActionType::Unarmed]->GetEquipment()->Equip();
+
 	ChangeType(EActionType::Unarmed);
 }
 
@@ -66,6 +72,14 @@ void UCActionComponent::SetMode(EActionType InNewType)
 		SetUnaremdMode();
 		return;
 	}
+	else if(IsUnarmedMode() == false)
+	{
+		if (DataAssets[(int32)Type] && DataAssets[(int32)Type]->GetEquipment())
+			DataAssets[(int32)Type]->GetEquipment()->Unequip();
+	}
+	
+	if (DataAssets[(int32)InNewType] && DataAssets[(int32)InNewType]->GetEquipment())
+		DataAssets[(int32)InNewType]->GetEquipment()->Equip();
 
 	ChangeType(InNewType);
 }
