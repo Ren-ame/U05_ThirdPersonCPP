@@ -23,7 +23,6 @@ void UCAnimNotifyState_Equip::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 	ACEquipment* Equipment = ActionData->GetEquipment();
 	CheckNull(Equipment);
 
-
 	Equipment->Begin_Equip();
 }
 
