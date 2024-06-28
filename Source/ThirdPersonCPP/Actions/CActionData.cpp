@@ -32,12 +32,18 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter)
 	}
 
 	if (DoActionClass)
-	{	
+	{
 		DoAction = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACDoAction>(DoActionClass, Transform, InOwnerCharacter);
 		DoAction->SetDatas(DoActionDatas);
 		DoAction->SetActorLabel(MakeActorLable(InOwnerCharacter, "DoAction"));
 		DoAction->AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
 		DoAction->FinishSpawning(Transform);
+
+		if (Attachment)
+		{
+			Attachment->OnAttachmentBeginOverlap.AddDynamic(DoAction, &ACDoAction::OnAttachmentBeginOverlap);
+			Attachment->OnAttachmentEndOverlap.AddDynamic(DoAction, &ACDoAction::OnAttachmentEndOverlap);
+		}
 	}
 }
 
