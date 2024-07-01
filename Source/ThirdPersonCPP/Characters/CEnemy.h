@@ -33,6 +33,9 @@ private:
 	void Hitted();
 	void Dead();
 
+	UFUNCTION()
+	void RestoreLogoColor();
+
 public:
 	void ChangeBodyColor(FLinearColor InColor) override;
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -56,9 +59,14 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Components")
 	UWidgetComponent* HealthWidgetComp;
 
+	UPROPERTY(EditAnywhere, Category = "Hitted")
+		float LaunchValue;
+
 private:
 	UMaterialInstanceDynamic* BodyMaterial;
 	UMaterialInstanceDynamic* LogoMaterial;
 
 	AController* DamageInstigator;
+
+	float DamageValue;
 };
