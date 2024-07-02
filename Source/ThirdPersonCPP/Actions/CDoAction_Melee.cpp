@@ -16,7 +16,6 @@ void ACDoAction_Melee::DoAction()
 
 		return;
 	}
-	
 
 	CheckFalse(StateComp->IsIdleMode());
 	StateComp->SetActionMode();
@@ -64,6 +63,12 @@ void ACDoAction_Melee::DisableCombo()
 
 void ACDoAction_Melee::ClearHittedCharacters()
 {
+	HittedCharacters.Empty();
+}
+
+void ACDoAction_Melee::RestoreGlobalTimeDilation()
+{
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
 void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter)
@@ -80,7 +85,7 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* 
 	if (FMath::IsNearlyZero(HitStop) == false)
 	{
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.02f);
-		UKismetSystemLibrary::K2_SetTimer(this, "RestoreGloblaTimeDilation", HitStop * 0.02f, false);
+		UKismetSystemLibrary::K2_SetTimer(this, "RestoreGlobalTimeDilation", HitStop * 0.02f, false);
 	}
 
 	TSubclassOf<UCameraShake> ShakeClass = Datas[ComboCount].ShakeClass;
@@ -91,6 +96,14 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* 
 		{
 			PC->PlayerCameraManager->PlayCameraShake(ShakeClass);
 		}
+	}
+
+	UParticleSystem* HitEffect = Datas[ComboCount].Effect;
+	if (HitEffect)
+	{
+		FTransform Transform = Datas[ComboCount].EffectTransform;
+		Transform.AddToTranslation(InOtherCharacter->GetActorLocation());
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, Transform);
 	}
 
 	//Take Damage

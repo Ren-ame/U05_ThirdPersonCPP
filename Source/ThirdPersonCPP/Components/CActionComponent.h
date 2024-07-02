@@ -28,6 +28,8 @@ protected:
 public:
 	void DoAction();
 
+	void OffAllCollisions();
+
 public:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE UCActionData* GetCurrentActionData() { return DataAssets[(int32)Type]; }
