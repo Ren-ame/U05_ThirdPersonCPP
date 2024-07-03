@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "Interfaces/CCharacterInterface.h"
 #include "Components/CStateComponent.h"
+#include "Components/TimelineComponent.h"
 #include "CEnemy.generated.h"
 
 class UCAttributeComponent;
@@ -13,6 +14,7 @@ class UCActionComponent;
 class UMaterialInstanceDynamic;
 class UWidgetComponent;
 class AController;
+class UCurveFloat;
 
 UCLASS()
 class THIRDPERSONCPP_API ACEnemy : public ACharacter, public ICCharacterInterface
@@ -25,9 +27,16 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+public:
+	virtual void Tick(float DeltaTime) override;
+
 private:
 	UFUNCTION()
 	void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
+
+public:
+	void ChangeBodyColor(FLinearColor InColor) override;
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 private:
 	void Hitted();
@@ -36,9 +45,10 @@ private:
 	UFUNCTION()
 	void RestoreLogoColor();
 
-public:
-	void ChangeBodyColor(FLinearColor InColor) override;
-	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	UFUNCTION()
+	void StartDissolve(float Output);
+	UFUNCTION()
+	void EndDissolve();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Components")
@@ -60,13 +70,21 @@ protected:
 	UWidgetComponent* HealthWidgetComp;
 
 	UPROPERTY(EditAnywhere, Category = "Hitted")
-		float LaunchValue;
+	float LaunchValue;
+
+	UPROPERTY(EditAnywhere, Category = "Hitted")
+	UCurveFloat* DissolveCurve;
 
 private:
 	UMaterialInstanceDynamic* BodyMaterial;
 	UMaterialInstanceDynamic* LogoMaterial;
 
-	AController* DamageInstigator;
+	UPROPERTY(VisibleInstanceOnly)
+	UMaterialInstanceDynamic* DissolveMaterial;
 
+
+	AController* DamageInstigator;
 	float DamageValue;
+
+	FTimeline DissolveTime;
 };

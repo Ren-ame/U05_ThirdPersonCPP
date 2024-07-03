@@ -50,8 +50,11 @@ private:
 	void OnFist();
 	void OnOneHand();
 	void OnTwoHand();
+	void OnMagicBall();
 
 	void OnPrimaryAction();
+	void OnSecondaryAction();
+	void OffSecondaryAction();
 
 
 public:
