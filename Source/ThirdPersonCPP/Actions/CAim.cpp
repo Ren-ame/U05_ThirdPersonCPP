@@ -3,6 +3,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "CHUD.h"
 
 UCAim::UCAim()
 {
@@ -19,6 +20,11 @@ void UCAim::BeginPlay(ACharacter* InOwnerCharacter)
 	FOnTimelineFloat OnProgressDelegate;
 	OnProgressDelegate.BindUFunction(this, "OnProgress");
 	Timeline.AddInterpFloat(Curve, OnProgressDelegate);
+
+	APlayerController* PC = OwnerCharacter->GetWorld()->GetFirstPlayerController();
+	CheckNull(PC);
+
+	HUD = PC->GetHUD<ACHUD>();
 }
 
 void UCAim::Tick(float DeltaTime)
@@ -32,12 +38,13 @@ void UCAim::On()
 	CheckTrue(bZooming);
 
 	bZooming = true;
+
+	HUD->VisibleAim();
 	
 	SpringArmComp->TargetArmLength = 100.f;
 	SpringArmComp->SocketOffset = FVector(0, 30, 10);
 	SpringArmComp->bEnableCameraLag = false;
 
-	//CameraComp->FieldOfView = 45.f;
 	Timeline.PlayFromStart();
 }
 
@@ -48,11 +55,13 @@ void UCAim::Off()
 
 	bZooming = false;
 
+	HUD->InvisibleAim();
+
 	SpringArmComp->TargetArmLength = 200.f;
 	SpringArmComp->SocketOffset = FVector::ZeroVector;
 	SpringArmComp->bEnableCameraLag = true;
 
-	//CameraComp->FieldOfView = 90.f;
+	CameraComp->FieldOfView = 90.f;
 	Timeline.ReverseFromEnd();
 }
 
