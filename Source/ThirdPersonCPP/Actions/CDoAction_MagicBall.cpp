@@ -12,6 +12,9 @@ void ACDoAction_MagicBall::BeginPlay()
 
 	Aim = NewObject<UCAim>();
 	Aim->BeginPlay(OwnerCharacter);
+
+	UCActionComponent* ActionComp = CHelpers::GetComponent<UCActionComponent>(OwnerCharacter);
+	ActionComp->OnActionTypeChanged.AddDynamic(this, &ACDoAction_MagicBall::AbortByActionTypeChanged);
 }
 
 void ACDoAction_MagicBall::Tick(float DeltaTime)
@@ -93,4 +96,12 @@ void ACDoAction_MagicBall::OnProjectileBeginOverlap(FHitResult InHitResult)
 
 	FDamageEvent DamageEvent;
 	InHitResult.GetActor()->TakeDamage(Datas[0].Power, DamageEvent, OwnerCharacter->GetController(), this);
+}
+
+void ACDoAction_MagicBall::AbortByActionTypeChanged(EActionType InPrevType, EActionType InNewType)
+{
+	CheckFalse(Aim->CanAim());
+	CheckFalse(Aim->IsZooming());
+
+	Aim->Off();
 }

@@ -25,6 +25,7 @@ public:
 
 public:
 	void SetDatas(const TArray<FDoActionData>& InDatas);
+	void SetEquipment(const bool* InEquipped);
 
 public:
 	virtual void DoAction() {};
@@ -53,4 +54,6 @@ protected:
 
 protected:
 	TArray<FDoActionData> Datas;
+
+	const bool* bEquipped;
 };
