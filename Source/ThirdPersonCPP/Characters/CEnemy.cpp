@@ -90,7 +90,7 @@ void ACEnemy::BeginPlay()
 
 	//BP BeginPlay
 	Super::BeginPlay();
-	ActionComp->SetUnaremdMode();
+	//ActionComp->SetUnaremdMode();
 
 	//Widget
 	NameWidgetComp->InitWidget();

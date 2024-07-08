@@ -52,6 +52,7 @@ private:
 	void OnTwoHand();
 	void OnMagicBall();
 	void OnWarp();
+	void OnWhirlwind();
 
 	void OnPrimaryAction();
 	void OnSecondaryAction();
