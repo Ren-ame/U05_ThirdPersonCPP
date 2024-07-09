@@ -10,6 +10,7 @@
 #include "Components/CMontagesComponent.h"
 #include "Components/CActionComponent.h"
 #include "Actions/CActionData.h"
+#include "Actions/CAction.h"
 
 ACPlayer::ACPlayer()
 {
@@ -269,7 +270,12 @@ void ACPlayer::Begin_Backstep()
 
 void ACPlayer::End_Roll()
 {
-	if (ActionComp->GetCurrentActionData()->EquipmentData.bLookForward == true)
+	if (ActionComp->GetCurrentActionDataAsset() == nullptr)
+	{
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+	}
+	else if (ActionComp->GetCurrentActionDataAsset()->EquipmentData.bLookForward == true)
 	{
 		bUseControllerRotationYaw = true;
 		GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -280,7 +286,12 @@ void ACPlayer::End_Roll()
 
 void ACPlayer::End_Backstep()
 {
-	if (ActionComp->GetCurrentActionData()->EquipmentData.bLookForward == false)
+	if (ActionComp->GetCurrentActionDataAsset() == nullptr)
+	{
+		bUseControllerRotationYaw = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+	else if (ActionComp->GetCurrentActionDataAsset()->EquipmentData.bLookForward == false)
 	{
 		bUseControllerRotationYaw = false;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
