@@ -15,8 +15,9 @@ public class ThirdPersonCPP : ModuleRules
 			"Core", 
 			"CoreUObject", 
 			"Engine", 
-			"InputCore" , 
-			"AIModule" 
+			"InputCore", 
+			"AIModule",
+			"GameplayTasks"
 		});
 	}
 }
