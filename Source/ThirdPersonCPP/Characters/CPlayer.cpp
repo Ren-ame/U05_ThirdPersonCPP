@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInstanceConstant.h"
@@ -11,6 +12,7 @@
 #include "Components/CActionComponent.h"
 #include "Actions/CActionData.h"
 #include "Actions/CAction.h"
+#include "Blueprint/UserWidget.h"
 
 ACPlayer::ACPlayer()
 {
@@ -53,6 +55,12 @@ ACPlayer::ACPlayer()
 	GetCharacterMovement()->MaxWalkSpeed = AttributeComp->GetSprintSpeed();
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0, 720, 0);
+
+	//-> Create Weapon Change Widget
+	TSubclassOf<UUserWidget> WeaponWidgetClass;
+	CHelpers::GetClass(&WeaponWidgetClass, "/Game/Widgets/WB_WeaponChange");
+
+	WeaponChangeWidget = CreateWidget(GetWorld(), WeaponWidgetClass);
 }
 
 void ACPlayer::BeginPlay()
@@ -73,6 +81,13 @@ void ACPlayer::BeginPlay()
 
 	GetMesh()->SetMaterial(0, BodyMaterial);
 	GetMesh()->SetMaterial(1, LogoMaterial);
+
+
+	if (WeaponChangeWidget != nullptr)
+	{
+		WeaponChangeWidget->AddToViewport();
+		WeaponChangeWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
 
 	ActionComp->SetUnaremdMode();
 }
@@ -112,6 +127,9 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("PrimaryAction", EInputEvent::IE_Pressed, this, &ACPlayer::OnPrimaryAction);
 	PlayerInputComponent->BindAction("SecondaryAction", EInputEvent::IE_Pressed, this, &ACPlayer::OnSecondaryAction);
 	PlayerInputComponent->BindAction("SecondaryAction", EInputEvent::IE_Released, this, &ACPlayer::OffSecondaryAction);
+
+	PlayerInputComponent->BindAction("WeaponChange", EInputEvent::IE_Pressed, this, &ACPlayer::OnChangeWeapon);
+	PlayerInputComponent->BindAction("WeaponChange", EInputEvent::IE_Released, this, &ACPlayer::OffChangeWeapon);
 }
 
 FGenericTeamId ACPlayer::GetGenericTeamId() const
@@ -240,6 +258,25 @@ void ACPlayer::OnSecondaryAction()
 void ACPlayer::OffSecondaryAction()
 {
 	ActionComp->DoSubAction(false);
+}
+
+void ACPlayer::OnChangeWeapon()
+{
+	CheckFalse(StateComp->IsIdleMode());
+
+	WeaponChangeWidget->SetVisibility(ESlateVisibility::Visible);
+	APlayerController* APC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	APC->bShowMouseCursor = true;
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
+
+}
+
+void ACPlayer::OffChangeWeapon()
+{
+	WeaponChangeWidget->SetVisibility(ESlateVisibility::Hidden);
+	APlayerController* APC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	APC->bShowMouseCursor = false;
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 }
 
 void ACPlayer::Begin_Roll()

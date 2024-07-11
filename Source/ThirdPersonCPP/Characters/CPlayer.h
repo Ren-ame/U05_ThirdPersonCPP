@@ -15,6 +15,7 @@ class UCStateComponent;
 class UCMontagesComponent;
 class UCActionComponent;
 class UMaterialInstanceDynamic;
+class UUserWidget;
 
 UCLASS()
 class THIRDPERSONCPP_API ACPlayer : public ACharacter, public ICCharacterInterface, public IGenericTeamAgentInterface
@@ -60,6 +61,8 @@ private:
 	void OnSecondaryAction();
 	void OffSecondaryAction();
 
+	void OnChangeWeapon();
+	void OffChangeWeapon();
 
 public:
 	void Begin_Roll();
@@ -94,6 +97,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Components")
 	UCActionComponent* ActionComp;
+
+private:
+	UUserWidget* WeaponChangeWidget;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "TeamID")
