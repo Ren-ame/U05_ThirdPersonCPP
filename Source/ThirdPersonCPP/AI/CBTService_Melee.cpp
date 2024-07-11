@@ -5,8 +5,9 @@
 #include "Characters/CPlayer.h"
 #include "Components/CBehaviorComponent.h"
 #include "Components/CStateComponent.h"
+#include "Components/CPatrolComponent.h"
 
-void UCBTService_Melee::UCBTService_Melee()
+UCBTService_Melee::UCBTService_Melee()
 {
 	NodeName = "Root_Melee";
 }
@@ -22,6 +23,7 @@ void UCBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	CheckNull(EnemyPawn);
 
 	UCStateComponent* StateComp = CHelpers::GetComponent<UCStateComponent>(EnemyPawn);
+	UCPatrolComponent* PatrolComp = CHelpers::GetComponent<UCPatrolComponent>(EnemyPawn);
 
 	//Is Hitted
 	if (StateComp->IsHittedMode())
@@ -32,14 +34,29 @@ void UCBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 
 	//Try Get PlayerKey from BB
 	ACPlayer* Player = BehaviorComp->GetPlayerKey();
-
 	if (Player == nullptr)
 	{
+		if (PatrolComp->IsPathValid())
+		{
+			BehaviorComp->SetPatrolMode();
+			return;
+		}
+
 		BehaviorComp->SetWaitMode();
 		return;
 	}
 
 	//Percepted Player
-	//-> 감지범위 from AIC
-	//-> 공격범위 -> 공개변수
+	float Distance = EnemyPawn->GetDistanceTo(Player);
+
+	if (Distance < AIC->GetBehaviorRange())
+	{
+		BehaviorComp->SetActionMode();
+		return;
+	}
+
+	if (Distance < AIC->GetSightRadius())
+	{
+		BehaviorComp->SetApproachMode();
+	}
 }

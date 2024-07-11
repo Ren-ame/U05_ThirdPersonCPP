@@ -19,7 +19,6 @@ void UCBehaviorComponent::BeginPlay()
 void UCBehaviorComponent::SetBlackboardComp(UBlackboardComponent* InComp)
 {
 	BlackboardComp = InComp;
-	//Todo.. 나머지는 내일..
 }
 
 bool UCBehaviorComponent::IsWaitMode()
