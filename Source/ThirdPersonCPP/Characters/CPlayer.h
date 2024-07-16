@@ -63,6 +63,7 @@ private:
 
 	void Hitted();
 	void Dead();
+
 	UFUNCTION()
 	void End_Dead();
 
