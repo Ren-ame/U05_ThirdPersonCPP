@@ -34,6 +34,7 @@ public:
 
 public:
 	void ChangeBodyColor(FLinearColor InColor) override;
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 private:
 	void OnMoveForward(float Axis);
@@ -60,6 +61,10 @@ private:
 	void OnSecondaryAction();
 	void OffSecondaryAction();
 
+	void Hitted();
+	void Dead();
+	UFUNCTION()
+	void End_Dead();
 
 public:
 	void Begin_Roll();
@@ -102,4 +107,7 @@ private:
 private:
 	UMaterialInstanceDynamic* BodyMaterial;
 	UMaterialInstanceDynamic* LogoMaterial;
+
+	float DamageValue;
+	AController* DamageInstigator;
 };

@@ -9,6 +9,7 @@
 #include "Components/COptionComponent.h"
 #include "Components/CMontagesComponent.h"
 #include "Components/CActionComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Actions/CActionData.h"
 #include "Actions/CAction.h"
 
@@ -87,6 +88,25 @@ void ACPlayer::ChangeBodyColor(FLinearColor InColor)
 {
 	BodyMaterial->SetVectorParameterValue("BodyColor", InColor);
 	LogoMaterial->SetVectorParameterValue("BodyColor", InColor);
+}
+
+float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	DamageInstigator = EventInstigator;
+
+	ActionComp->Abort();
+	AttributeComp->DecreaseHealth(Damage);
+
+	if (AttributeComp->GetCurrentHealth() <= 0.f)
+	{
+		StateComp->SetDeadMode();
+		return 0.f;
+	}
+
+	StateComp->SetHittedMode();
+
+	return DamageValue;
 }
 
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -242,6 +262,32 @@ void ACPlayer::OffSecondaryAction()
 	ActionComp->DoSubAction(false);
 }
 
+void ACPlayer::Hitted()
+{
+	MontagesComp->PlayHitted();
+	AttributeComp->SetStop();
+}
+
+void ACPlayer::Dead()
+{
+	//Ragdoll
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionProfileName("Ragdoll");
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->DisableMovement();
+
+	//Off ActionComp Disable
+	ActionComp->OffAllCollisions();
+
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.25f);
+	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 2.f, false);
+}
+
+void ACPlayer::End_Dead()
+{
+	CLog::Print("Game Over");
+}
+
 void ACPlayer::Begin_Roll()
 {
 	bUseControllerRotationYaw = false;
@@ -319,6 +365,17 @@ void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 		Begin_Backstep();
 	}
 		break;
+	case EStateType::Hitted:
+	{
+		Hitted();
+	}
+		break;
+	case EStateType::Dead:
+	{
+		Dead();
+	}
+		break;
+
 	}
 }
 
