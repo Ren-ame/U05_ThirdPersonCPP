@@ -89,6 +89,17 @@ void ACPlayer::BeginPlay()
 	GetMesh()->SetMaterial(1, LogoMaterial);
 
 	ActionComp->SetUnaremdMode();
+
+	if (WeaponChangeWidgetClass)
+	{
+		APlayerController* PC = GetController<APlayerController>();
+		if (PC)
+		{
+			WeaponChangeWidget = CreateWidget<UUserWidget>(PC, WeaponChangeWidgetClass);
+			WeaponChangeWidget->AddToViewport();
+			WeaponChangeWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -145,6 +156,9 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("PrimaryAction", EInputEvent::IE_Pressed, this, &ACPlayer::OnPrimaryAction);
 	PlayerInputComponent->BindAction("SecondaryAction", EInputEvent::IE_Pressed, this, &ACPlayer::OnSecondaryAction);
 	PlayerInputComponent->BindAction("SecondaryAction", EInputEvent::IE_Released, this, &ACPlayer::OffSecondaryAction);
+
+	PlayerInputComponent->BindAction("WeaponChangeWidget", EInputEvent::IE_Pressed, this, &ACPlayer::OnWeaponChangeWidget);
+	PlayerInputComponent->BindAction("WeaponChangeWidget", EInputEvent::IE_Released, this, &ACPlayer::OffWeaponChangeWidget);
 }
 
 FGenericTeamId ACPlayer::GetGenericTeamId() const
@@ -273,6 +287,32 @@ void ACPlayer::OnSecondaryAction()
 void ACPlayer::OffSecondaryAction()
 {
 	ActionComp->DoSubAction(false);
+}
+
+void ACPlayer::OnWeaponChangeWidget()
+{
+	CheckNull(WeaponChangeWidget);
+
+	WeaponChangeWidget->SetVisibility(ESlateVisibility::Visible);
+
+	APlayerController* PC = GetController<APlayerController>();
+	CheckNull(PC);
+
+	PC->bShowMouseCursor = true;
+	PC->SetInputMode(FInputModeGameAndUI());
+}
+
+void ACPlayer::OffWeaponChangeWidget()
+{
+	CheckNull(WeaponChangeWidget);
+
+	WeaponChangeWidget->SetVisibility(ESlateVisibility::Collapsed);
+
+	APlayerController* PC = GetController<APlayerController>();
+	CheckNull(PC);
+
+	PC->bShowMouseCursor = false;
+	PC->SetInputMode(FInputModeGameOnly());
 }
 
 void ACPlayer::Hitted()

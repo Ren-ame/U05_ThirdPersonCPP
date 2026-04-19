@@ -63,6 +63,9 @@ private:
 	void OnSecondaryAction();
 	void OffSecondaryAction();
 
+	void OnWeaponChangeWidget();
+	void OffWeaponChangeWidget();
+
 	void Hitted();
 	void Dead();
 
@@ -116,6 +119,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> DeadWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> WeaponChangeWidgetClass;
+
 private:
 	UMaterialInstanceDynamic* BodyMaterial;
 	UMaterialInstanceDynamic* LogoMaterial;
@@ -124,5 +130,6 @@ private:
 	AController* DamageInstigator;
 
 	UUserWidget* DeadWidget;
+	UUserWidget* WeaponChangeWidget;
 
 };
