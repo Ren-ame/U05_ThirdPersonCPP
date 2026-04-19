@@ -89,6 +89,16 @@ void ACPlayer::BeginPlay()
 	GetMesh()->SetMaterial(1, LogoMaterial);
 
 	ActionComp->SetUnaremdMode();
+
+	if (WeaponChangeWidgetClass)
+	{
+		APlayerController* PC = GetController<APlayerController>();
+		if (PC)
+		{
+			WeaponChangeWidget = CreateWidget<UUserWidget>(PC, WeaponChangeWidgetClass);
+			WeaponChangeWidget->AddToViewport();
+		}
+	}
 }
 
 void ACPlayer::Tick(float DeltaTime)

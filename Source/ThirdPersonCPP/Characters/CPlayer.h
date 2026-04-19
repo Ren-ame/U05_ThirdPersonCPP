@@ -116,6 +116,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> DeadWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> WeaponChangeWidgetClass;
+
 private:
 	UMaterialInstanceDynamic* BodyMaterial;
 	UMaterialInstanceDynamic* LogoMaterial;
@@ -124,5 +127,6 @@ private:
 	AController* DamageInstigator;
 
 	UUserWidget* DeadWidget;
+	UUserWidget* WeaponChangeWidget;
 
 };
